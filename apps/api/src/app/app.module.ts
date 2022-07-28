@@ -1,11 +1,22 @@
+import { TypeOrmModule } from '@nestjs/typeorm'
 import { Module } from '@nestjs/common'
-
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
+import { CoreModule } from '@nestjs-api-test/core'
+import { UserModule } from './user/user.module'
+import { AuthModule } from './auth/auth.module'
+import { BookmarkModule } from './bookmark/bookmark.module'
+import { DatabaseConnectionService } from './database/database-connection.service'
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    CoreModule,
+    AuthModule,
+    UserModule,
+    BookmarkModule,
+    TypeOrmModule.forRootAsync({
+      useClass: DatabaseConnectionService,
+    }),
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
