@@ -9,26 +9,17 @@
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AppModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
-const typeorm_1 = __webpack_require__("@nestjs/typeorm");
+const database_module_1 = __webpack_require__("./apps/api/src/app/database/database.module.ts");
 const common_1 = __webpack_require__("@nestjs/common");
 const core_1 = __webpack_require__("./libs/core/src/index.ts");
 const user_module_1 = __webpack_require__("./apps/api/src/app/user/user.module.ts");
 const auth_module_1 = __webpack_require__("./apps/api/src/app/auth/auth.module.ts");
 const bookmark_module_1 = __webpack_require__("./apps/api/src/app/bookmark/bookmark.module.ts");
-const database_connection_service_1 = __webpack_require__("./apps/api/src/app/database/database-connection.service.ts");
 let AppModule = class AppModule {
 };
 AppModule = (0, tslib_1.__decorate)([
     (0, common_1.Module)({
-        imports: [
-            core_1.CoreModule,
-            auth_module_1.AuthModule,
-            user_module_1.UserModule,
-            bookmark_module_1.BookmarkModule,
-            typeorm_1.TypeOrmModule.forRootAsync({
-                useClass: database_connection_service_1.DatabaseConnectionService,
-            }),
-        ],
+        imports: [core_1.CoreModule, auth_module_1.AuthModule, user_module_1.UserModule, bookmark_module_1.BookmarkModule, database_module_1.DatabaseModule],
         controllers: [],
         providers: [],
     })
@@ -88,15 +79,12 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AuthModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-const typeorm_1 = __webpack_require__("@nestjs/typeorm");
-const user_entity_1 = __webpack_require__("./apps/api/src/app/entities/user.entity.ts");
 const auth_controller_1 = __webpack_require__("./apps/api/src/app/auth/auth.controller.ts");
 const auth_service_1 = __webpack_require__("./apps/api/src/app/auth/auth.service.ts");
 let AuthModule = class AuthModule {
 };
 AuthModule = (0, tslib_1.__decorate)([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.UserEntity])],
         controllers: [auth_controller_1.AuthController],
         providers: [auth_service_1.AuthService],
     })
@@ -193,32 +181,55 @@ exports.BookmarkService = BookmarkService;
 
 /***/ }),
 
-/***/ "./apps/api/src/app/database/database-connection.service.ts":
+/***/ "./apps/api/src/app/database/database.module.ts":
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.DatabaseConnectionService = void 0;
+exports.DatabaseModule = void 0;
 const tslib_1 = __webpack_require__("tslib");
 const common_1 = __webpack_require__("@nestjs/common");
-let DatabaseConnectionService = class DatabaseConnectionService {
-    createTypeOrmOptions() {
-        return {
-            type: 'postgres',
-            host: process.env.POSTGRES_HOST,
-            port: Number(process.env.POSTGRES_PORT),
-            username: process.env.POSTGRES_USER,
-            password: process.env.POSTGRES_PASSWORD,
-            database: process.env.POSTGRES_DB,
-            entities: ['dist/apps/api/src/**/*.entity.js'],
-            synchronize: true,
-        };
-    }
+const database_service_1 = __webpack_require__("./apps/api/src/app/database/database.service.ts");
+let DatabaseModule = class DatabaseModule {
 };
-DatabaseConnectionService = (0, tslib_1.__decorate)([
-    (0, common_1.Injectable)()
-], DatabaseConnectionService);
-exports.DatabaseConnectionService = DatabaseConnectionService;
+DatabaseModule = (0, tslib_1.__decorate)([
+    (0, common_1.Module)({
+        providers: [...database_service_1.databaseService],
+        exports: [...database_service_1.databaseService],
+    })
+], DatabaseModule);
+exports.DatabaseModule = DatabaseModule;
+
+
+/***/ }),
+
+/***/ "./apps/api/src/app/database/database.service.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.databaseService = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const entities_1 = __webpack_require__("./apps/api/src/app/entities/index.ts");
+const typeorm_1 = __webpack_require__("typeorm");
+exports.databaseService = [
+    {
+        provide: 'DATA_SOURCE',
+        useFactory: () => (0, tslib_1.__awaiter)(void 0, void 0, void 0, function* () {
+            const dataSource = new typeorm_1.DataSource({
+                type: 'postgres',
+                host: process.env.POSTGRES_HOST,
+                port: Number(process.env.POSTGRES_PORT),
+                username: process.env.POSTGRES_USER,
+                password: process.env.POSTGRES_PASSWORD,
+                database: process.env.POSTGRES_DB,
+                entities: [...entities_1.default],
+                synchronize: true,
+            });
+            return dataSource.initialize();
+        }),
+    },
+];
 
 
 /***/ }),
@@ -247,6 +258,51 @@ class AbstractEntity extends typeorm_1.BaseEntity {
     (0, tslib_1.__metadata)("design:type", typeof (_b = typeof Date !== "undefined" && Date) === "function" ? _b : Object)
 ], AbstractEntity.prototype, "updatedAt", void 0);
 exports.AbstractEntity = AbstractEntity;
+
+
+/***/ }),
+
+/***/ "./apps/api/src/app/entities/bookmark.entity.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.BookmarkEntity = void 0;
+const tslib_1 = __webpack_require__("tslib");
+const typeorm_1 = __webpack_require__("typeorm");
+const abstract_entity_1 = __webpack_require__("./apps/api/src/app/entities/abstract.entity.ts");
+let BookmarkEntity = class BookmarkEntity extends abstract_entity_1.AbstractEntity {
+};
+(0, tslib_1.__decorate)([
+    (0, typeorm_1.Column)(),
+    (0, tslib_1.__metadata)("design:type", String)
+], BookmarkEntity.prototype, "title", void 0);
+(0, tslib_1.__decorate)([
+    (0, typeorm_1.Column)({
+        default: null, nullable: true
+    }),
+    (0, tslib_1.__metadata)("design:type", String)
+], BookmarkEntity.prototype, "description", void 0);
+(0, tslib_1.__decorate)([
+    (0, typeorm_1.Column)(),
+    (0, tslib_1.__metadata)("design:type", String)
+], BookmarkEntity.prototype, "link", void 0);
+BookmarkEntity = (0, tslib_1.__decorate)([
+    (0, typeorm_1.Entity)('bookmarks')
+], BookmarkEntity);
+exports.BookmarkEntity = BookmarkEntity;
+
+
+/***/ }),
+
+/***/ "./apps/api/src/app/entities/index.ts":
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const user_entity_1 = __webpack_require__("./apps/api/src/app/entities/user.entity.ts");
+const bookmark_entity_1 = __webpack_require__("./apps/api/src/app/entities/bookmark.entity.ts");
+exports["default"] = [user_entity_1.UserEntity, bookmark_entity_1.BookmarkEntity];
 
 
 /***/ }),
@@ -291,6 +347,10 @@ let UserEntity = class UserEntity extends abstract_entity_1.AbstractEntity {
     (0, typeorm_1.Column)({ default: '', nullable: true }),
     (0, tslib_1.__metadata)("design:type", String)
 ], UserEntity.prototype, "lastName", void 0);
+(0, tslib_1.__decorate)([
+    (0, typeorm_1.Column)(),
+    (0, tslib_1.__metadata)("design:type", String)
+], UserEntity.prototype, "random", void 0);
 (0, tslib_1.__decorate)([
     (0, typeorm_1.BeforeInsert)(),
     (0, tslib_1.__metadata)("design:type", Function),
@@ -455,13 +515,6 @@ module.exports = require("@nestjs/config");
 /***/ ((module) => {
 
 module.exports = require("@nestjs/core");
-
-/***/ }),
-
-/***/ "@nestjs/typeorm":
-/***/ ((module) => {
-
-module.exports = require("@nestjs/typeorm");
 
 /***/ }),
 

@@ -20,6 +20,9 @@ export class UserEntity extends AbstractEntity {
   @Column({ default: '', nullable: true })
   lastName?: string | null
 
+  @Column()
+  random: string
+
   @BeforeInsert()
  async hashPassword () {
     this.password = await bcrypt.hash(this.password, 10)

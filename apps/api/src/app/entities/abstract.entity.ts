@@ -9,4 +9,5 @@ export abstract class AbstractEntity extends BaseEntity {
 
     @UpdateDateColumn()
     updatedAt: Date
+    
 }

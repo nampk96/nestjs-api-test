@@ -6,11 +6,10 @@
       "start": "nx serve",
       "build": "nx build",
       "test": "nx test",
-      "typeorm": "typeorm-ts-node-commonjs"
+      "create-entities-index": "ts-node --pretty --project=tools/tsconfig.tools.json tools/create-entities-index.ts"
    },
    "private": true,
    "dependencies": {
-      "@hapi/joi": "^17.1.1",
       "@nestjs/common": "^8.0.0",
       "@nestjs/config": "^2.2.0",
       "@nestjs/core": "^8.0.0",
@@ -40,11 +39,12 @@
       "@nrwl/nx-cloud": "latest",
       "@nrwl/workspace": "14.4.3",
       "@types/jest": "27.4.1",
-      "@types/node": "^16.11.10",
+      "@types/node": "^16.11.47",
       "@typescript-eslint/eslint-plugin": "^5.29.0",
       "@typescript-eslint/parser": "^5.29.0",
       "eslint": "~8.15.0",
       "eslint-config-prettier": "8.1.0",
+      "fast-glob": "^3.2.11",
       "husky": "^8.0.1",
       "jest": "27.5.1",
       "lint-staged": "^13.0.3",
